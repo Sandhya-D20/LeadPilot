@@ -1,0 +1,33 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read, create, update: if request.auth != null
+                                  && request.auth.uid == userId;
+      allow delete: if false;
+
+      match /leads/{leadId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
+      }
+
+      match /conversations/{conversationId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
+      }
+
+      match /proposals/{proposalId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
+      }
+    }
+
+    // Everything else is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
